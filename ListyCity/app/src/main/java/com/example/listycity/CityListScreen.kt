@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ fun CityListScreen(
     cities: List<City>,
     onAddCity: (City) -> Unit,
     onUpdateCity: (City, City) -> Unit,
+    onDeleteCity: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
@@ -113,7 +115,7 @@ fun CityListScreen(
                 OutlinedTextField(
                     value = editedCityName,
                     onValueChange = { editedCityName = it },
-                    label = { Text("Updated City") },
+                    label = { Text("Delete/Update City") },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -122,14 +124,18 @@ fun CityListScreen(
                 OutlinedTextField(
                     value = editedProvinceName,
                     onValueChange = { editedProvinceName = it },
-                    label = { Text("Updated Province") },
+                    label = { Text("Delete/Update Province") },
                     modifier = Modifier.weight(1f)
                 )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .align(Alignment.CenterHorizontally)
 
-                Spacer(modifier = Modifier.width(8.dp))
-
+            ){
                 Button(
-                    modifier = Modifier.padding(vertical = 12.dp),
+                    modifier = Modifier,
                     onClick = {
                         val cityToUpdate = selectedCity
                         if (
@@ -153,7 +159,29 @@ fun CityListScreen(
                 ) {
                     Text("UPDATE CITY")
                 }
+                Spacer(modifier = Modifier.width(25.dp))
+
+                Button(
+                    modifier = Modifier,
+                    onClick = {
+                        val cityToDelete = selectedCity
+                        if (
+                            cityToDelete != null
+                        ) {
+                            onDeleteCity(
+                                cityToDelete,
+                            )
+
+                            selectedCity = null
+                            editedCityName = ""
+                            editedProvinceName = ""
+                        }
+                    }
+                ) {
+                    Text("DELETE CITY")
+                }
             }
+
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             itemsIndexed(cities) { index, city ->
@@ -213,7 +241,8 @@ fun CityListScreenPreview() {
                 City("Calgary", "AB")
             ),
             onAddCity = {},
-            onUpdateCity = { _, _ -> }
+            onUpdateCity = { _, _ -> },
+            onDeleteCity = {}
         )
     }
 }
